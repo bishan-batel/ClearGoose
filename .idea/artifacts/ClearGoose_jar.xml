@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ClearGoose:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ClearGoose_jar</output-path>
+    <root id="archive" name="ClearGoose.jar">
+      <element id="module-output" name="ClearGoose" />
+    </root>
+  </artifact>
+</component>

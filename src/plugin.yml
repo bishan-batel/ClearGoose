@@ -1,0 +1,4 @@
+name: ClearGoose
+main: bishan.cleargoose.ClearGoose
+version: 0.0.1
+description: Lag was never an option
