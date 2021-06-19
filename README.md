@@ -1,5 +1,5 @@
 # ClearGoose
 peace was never an option
 
-###TODO
+# TODO
 make a prope readme or something lol
