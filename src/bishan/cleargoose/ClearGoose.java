@@ -13,20 +13,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ClearGoose extends JavaPlugin implements Listener {
-    public void clearItems() {
-        World world = Bukkit.getWorld("world");
-        if (world == null) return;
-    }
+    ItemClearer itemClearer;
 
     @Override
     public void onEnable() {
         getLogger()
                 .info("Clear Goose Enabled");
 
-        // Add death listener
-        getServer()
-                .getPluginManager()
-                .registerEvents(new DeathListener(this), this);
+
+        // Setup item clearer manager
+        itemClearer = new ItemClearer(this);
     }
 
 
