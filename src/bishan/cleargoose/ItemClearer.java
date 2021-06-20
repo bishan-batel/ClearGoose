@@ -40,9 +40,11 @@ public class ItemClearer implements CommandExecutor {
                 .getPluginManager()
                 .registerEvents(listener, plugin);
 
-        Objects.requireNonNull(plugin
-                .getCommand("clearlag"))
-                .setExecutor(this);
+        // Gives class control of clear items command
+        ClearGoose
+                .Commands
+                .CLEAR_ITEMS
+                .setExecutor(this, plugin);
     }
 
     @Override
