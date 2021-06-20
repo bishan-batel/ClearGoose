@@ -5,14 +5,8 @@ description: Lag was never an option
 author: bishan_
 
 commands:
-  rofl:
-    description: rofl bob
-    usage: /rofl [player]
-    permission: ClearGoose.basic
-    permission-message: You don't have <permission>
-
-  clearlag:
+  clearitems:
     description: Clears lag
-    usage: /clearlag [n] [seconds/minutes]
+    usage: /clearitems [n] [seconds/minutes]
     permission: ClearGoose.op
     permission-message: You don't have <permission>
