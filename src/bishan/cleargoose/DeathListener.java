@@ -2,7 +2,6 @@ package bishan.cleargoose;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,14 +13,12 @@ import java.util.*;
 
 public class DeathListener implements Listener {
     public final float MAX_DIST = 1f;
-    final ClearGoose plugin;
+    final ItemClearer clearer;
     List<PlayerDeathInfo> deathStacks;
-    List<UUID> deathBlacklist;
 
-    public DeathListener(ClearGoose plugin) {
-        this.plugin = plugin;
+    public DeathListener(ItemClearer plugin) {
+        this.clearer = plugin;
         deathStacks = new ArrayList<>();
-        deathBlacklist = new ArrayList<>();
     }
 
     @EventHandler
@@ -58,21 +55,23 @@ public class DeathListener implements Listener {
         PlayerDeathInfo info = infoOption.get();
 
         // adds the entity's UID to blacklist so it does not get cleared by cleargoose
-        deathBlacklist.add(item.getUniqueId());
+        clearer
+                .deathBlacklist
+                .add(item.getUniqueId());
 
         // crosses off item on the death checklist
 
+        // TODO find why popping off item from the death checklist causes death to error out
         info.popItem(itemStack);
         Bukkit.broadcastMessage("   Popped off DCS list");
 
 
-//        if (info.shouldDelete()) {
-//
-//            // remove checklist if empty
-//            deathStacks.remove(info);
-//            Bukkit.broadcastMessage("-- Finished DCS for player " + info.name + " --");
-//        }
+        if (info.shouldDelete()) {
 
+            // remove checklist if empty
+            deathStacks.remove(info);
+            Bukkit.broadcastMessage("-- Finished DCS for player " + info.name + " --");
+        }
     }
 
     @EventHandler

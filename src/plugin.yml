@@ -2,3 +2,17 @@ name: ClearGoose
 main: bishan.cleargoose.ClearGoose
 version: 0.0.1
 description: Lag was never an option
+author: bishan_
+
+commands:
+  rofl:
+    description: rofl bob
+    usage: /rofl [player]
+    permission: ClearGoose.basic
+    permission-message: You don't have <permission>
+
+  clearlag:
+    description: Clears lag
+    usage: /clearlag [n] [seconds/minutes]
+    permission: ClearGoose.op
+    permission-message: You don't have <permission>

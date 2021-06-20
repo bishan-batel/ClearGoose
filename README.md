@@ -2,4 +2,4 @@
 peace was never an option
 
 # TODO
-make a prope readme or something lol
+make a proper readme or something lol
