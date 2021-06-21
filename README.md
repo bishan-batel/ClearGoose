@@ -20,6 +20,8 @@ from both players and admins.
 - When giving players their items back, admins have no idea whether what they are telling the truth or not leading to
   people abusing the item clear for items they did not have/lose
 
+### This project is NOT production-ready
+
 ## TODO
 
 make rest of README 
