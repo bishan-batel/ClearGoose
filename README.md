@@ -1,10 +1,13 @@
+
+
 # ClearGoose
 
 lag was never an option
 
 ## About
+### This project is NOT production-ready
 
-In-development plugin to serve as a replacement for
+This is an in-development plugin for 1.17 to serve as a replacement for
 <a href="https://www.spigotmc.org/resources/clearlagg.68271/">
 ClearLag</a>, specifically the plugin's item clear functionality. While it works as simply as possible, complaints arise
 from both players and admins.
@@ -20,7 +23,6 @@ from both players and admins.
 - When giving players their items back, admins have no idea whether what they are telling the truth or not leading to
   people abusing the item clear for items they did not have/lose
 
-### This project is NOT production-ready
 
 ## TODO
 
