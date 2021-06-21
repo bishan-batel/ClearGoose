@@ -3,29 +3,16 @@ package bishan.cleargoose;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.scheduler.BukkitScheduler;
 
+import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.util.*;
 
-enum ClearLagTimestamp {
-    THREE_SECONDS(Duration.ofSeconds(3), "Ground items will be cleared in 3"),
-    TWO_SECONDS(Duration.ofSeconds(2), "Ground items will be cleared in 2"),
-    ONE_SECONDS(Duration.ofSeconds(1), "Ground items will be cleared in 1");
-
-    private final Duration duration;
-    private final String msg;
-
-    ClearLagTimestamp(Duration duration, String msg) {
-        this.duration = duration;
-        this.msg = msg;
-    }
-}
-
-public class ItemClearer implements CommandExecutor {
+public class ItemClearer {
     ClearGoose plugin;
     DeathListener listener;
     List<UUID> deathBlacklist;
@@ -44,43 +31,101 @@ public class ItemClearer implements CommandExecutor {
         ClearGoose
                 .Commands
                 .CLEAR_ITEMS
-                .setExecutor(this, plugin);
+                .setExecutor(this::onClearItemCommand, plugin);
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String name, String[] args) {
+    public boolean onClearItemCommand(CommandSender sender, Command cmd, String name, String[] args) {
+        // Command Layout: /clearitems
+
+        if (args.length > 2) {
+            sender.sendMessage("Invalid number of arguments");
+            return false;
+        }
+
+        ClearOptions options = new ClearOptions();
+        queueClearItems(new ClearOptions());
+
         return true;
     }
 
-    public void queueClearItem(ClearOptions options) {
-        plugin
-                .getServer()
-                .getScheduler()
-                .scheduleSyncDelayedTask(
-                        plugin,
-                        () -> clearItems(options),
-                        options.delay.toMillis()
-                );
+    public void queueClearItems(ClearOptions options) {
+        BukkitScheduler scheduler = plugin.getServer().getScheduler();
+
+        scheduler.scheduleSyncDelayedTask(plugin,
+                () -> Bukkit.broadcastMessage("Items are being cleared in 3"),
+                secondsToTicks(options.delay.getSeconds() + 1)
+        );
+
+        scheduler.scheduleSyncDelayedTask(plugin,
+                () -> Bukkit.broadcastMessage("Items are being cleared in 2"),
+                secondsToTicks(options.delay.getSeconds() + 2)
+        );
+
+        scheduler.scheduleSyncDelayedTask(plugin,
+                () -> Bukkit.broadcastMessage("Items are being cleared in 1"),
+                secondsToTicks(options.delay.getSeconds() + 3)
+        );
+
+        // Gives delayed task to scheduler
+        scheduler.scheduleSyncDelayedTask(
+                plugin,
+                () -> clearItems(options),
+                secondsToTicks(options.delay.getSeconds() + 4)
+        );
     }
 
     public void clearItems(ClearOptions options) {
-        World world = Bukkit.getWorld("world");
-        assert world != null;
+        List<World> worlds = Bukkit.getWorlds();
 
-        world
-                .getEntitiesByClass(Item.class)
-                .stream()
-                .filter(entity -> !deathBlacklist.contains(entity.getUniqueId()))
-                .forEach(Entity::remove);
+
+        worlds
+                .forEach(world -> world
+
+                        .getEntitiesByClass(Item.class).stream()
+                        // Removes all entities who is UID is not on blacklist
+                        .filter(entity -> !deathBlacklist.contains(entity.getUniqueId()))
+                        .forEach(Entity::remove)
+                );
+
+        // Removes any blacklisted UID that does not lead to a still-living entity
+        deathBlacklist
+                // Removes blacklisted UID if
+                .removeIf(blacklistedUID ->
+                        worlds.stream()
+                                // there is no world with a entity with a UID that matches the blacklisted item
+                                .noneMatch(world -> world
+                                        .getEntitiesByClass(Item.class).stream()
+                                        .anyMatch(entity -> entity.getUniqueId().equals(blacklistedUID))
+                                )
+                );
+
     }
 
+    static long secondsToTicks(long seconds) {
+        return seconds * 20;
+    }
 
+    @Nonnull
     public static class ClearOptions {
-        public Duration delay = Duration.ofSeconds(5);
-        public boolean ignoreDeathItems = true;
+        public Duration delay;
+
+        // TODO implement IgnoreNewItems
+        public boolean ignoreDeathItems, ignoreNewItems;
 
 
         public ClearOptions() {
+            // Defaults
+            this(
+                    Duration.ofSeconds(0),
+                    true,
+                    true
+            );
+        }
+
+        public ClearOptions(Duration delay, boolean ignoreDeath, boolean ignoreNew) {
+            this.delay = delay;
+            ignoreDeathItems = ignoreDeath;
+            ignoreNewItems = ignoreNew;
         }
     }
 }
