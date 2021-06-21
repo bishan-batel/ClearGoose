@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ItemClearer {
     ClearGoose plugin;
@@ -78,13 +79,18 @@ public class ItemClearer {
         List<World> worlds = Bukkit.getWorlds();
 
 
+        var count = new AtomicInteger();
+
         worlds
                 .forEach(world -> world
 
                         .getEntitiesByClass(Item.class).stream()
                         // Removes all entities who is UID is not on blacklist
                         .filter(entity -> !deathBlacklist.contains(entity.getUniqueId()))
-                        .forEach(Entity::remove)
+                        .forEach(entity -> {
+                            entity.remove();
+                            count.incrementAndGet();
+                        })
                 );
 
         // Removes any blacklisted UID that does not lead to a still-living entity
@@ -99,6 +105,7 @@ public class ItemClearer {
                                 )
                 );
 
+        Bukkit.broadcastMessage("Cleared " + count + " entities");
     }
 
     static long secondsToTicks(long seconds) {
